@@ -1,11 +1,11 @@
-// Strategy Implementation: RSI + MACD + SMA (with full explanation)
+// Strategy Implementation: RSI + MACD + SMA 
 #include "strategy.h"
 #include <vector>
 #include <cmath>
 
 using namespace std;
 
-// --- 1. RSI Calculation ---
+//RSI Calculation
 // This function calculates RSI (Relative Strength Index)
 // RSI tells us if the stock is overbought (>70) or oversold (<30)
 double calculate_rsi(const vector<double>& closes, int index, int period = 14) {
@@ -28,7 +28,7 @@ double calculate_rsi(const vector<double>& closes, int index, int period = 14) {
     return 100 - (100 / (1 + rs)); // Final RSI formula (standard)
 }
 
-// --- 2. Exponential Moving Average (EMA) used for MACD ---
+//Exponential Moving Average (EMA) used for MACD 
 // This function calculates EMA over a given length
 // EMA gives more weight to recent prices
 double ema(const vector<double>& data, int current_index, int length) {
@@ -42,7 +42,7 @@ double ema(const vector<double>& data, int current_index, int length) {
     return ema;
 }
 
-// --- 3. MACD Calculation ---
+//MACD Calculation
 // MACD = EMA(12) - EMA(26)
 // Shows trend direction and momentum
 double calculate_macd(const vector<double>& closes, int index) {
@@ -51,7 +51,7 @@ double calculate_macd(const vector<double>& closes, int index) {
     return ema12 - ema26;
 }
 
-// --- 4. Simple Moving Average (SMA) ---
+//Simple Moving Average (SMA)
 // Calculates simple average of last 'period' closing prices
 double calculate_sma(const vector<double>& closes, int index, int period) {
     if (index < period) return closes[index]; // Not enough data, return current price
@@ -62,7 +62,7 @@ double calculate_sma(const vector<double>& closes, int index, int period) {
     return sum / period;
 }
 
-// --- 5. Main Trading Strategy Execution ---
+// Main Trading Strategy Execution 
 // Combines RSI, MACD, and SMA to decide when to buy/sell
 TradeResult run_strategy(const vector<Candle>& candles, double profit_threshold) {
     vector<double> closes;
@@ -79,7 +79,7 @@ TradeResult run_strategy(const vector<Candle>& candles, double profit_threshold)
         double macd = calculate_macd(closes, i);       // Get MACD value
         double sma20 = calculate_sma(closes, i, 20);   // Get 20-day SMA
 
-        // --- Buy Logic ---
+        // Buy Logic
         // Conditions to enter a trade:
         // 1. RSI is below 30 → possibly oversold
         // 2. MACD is positive → momentum might be turning bullish
@@ -89,7 +89,7 @@ TradeResult run_strategy(const vector<Candle>& candles, double profit_threshold)
             entry_price = closes[i];
         }
 
-        // --- Sell Logic ---
+        // Sell Logic 
         // Conditions to exit a trade:
         // 1. RSI has crossed above 60 (some profit taken)
         // 2. Price falls below SMA (trend weakening)
@@ -102,7 +102,7 @@ TradeResult run_strategy(const vector<Candle>& candles, double profit_threshold)
         }
     }
 
-    // --- If trade is still open at the end, force close it ---
+    //If trade is still open at the end, force close it 
     if (in_position) {
         double ret = (closes.back() - entry_price) / entry_price;
         total_return += ret;
@@ -110,7 +110,7 @@ TradeResult run_strategy(const vector<Candle>& candles, double profit_threshold)
         trades++;
     }
 
-    // --- Final calculation of strategy performance ---
+    //Final calculation of strategy performance 
     double avg_return = trades ? (total_return / trades) * 100 : 0; // Average return per trade
     double success = trades ? (double)wins / trades * 100 : 0;      // % of profitable trades
 
